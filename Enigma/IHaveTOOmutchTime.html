@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathematical Musical Enigmas</title>
+    <style>
+         #resposta {
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding: 5px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.3s ease;
+        }
+        #gerarEnigma {
+            background-color: #42b72a; /* Facebook Green */
+            color: #fff;
+        }
+        #gerarEnigma:hover {
+            background-color: #318a1d; /* Darker Green */
+        }
+        #verificarResposta {
+            background-color: #1877f2; /* Facebook Blue */
+            color: #fff;
+        }
+        #verificarResposta:hover {
+            background-color: #11569d; /* Darker Blue */
+        }
+        /* Styles for the tutorial tab */
+        #tutorial-tab {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1877f2;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #tutorial-content {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            text-align: left;
+        }
+        /* Styles for the "Still Don't Understand!" button */
+        #explainButton {
+            background-color: #e74c3c; /* Red */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        #explainButton:hover {
+            background-color: #c0392b; /* Darker Red */
+        }
+        /* Styles for the explanation box */
+        #explanation {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Mathematical Musical Enigmas</h1>
+        <div id="enigma">Enigma: [Generated enigma will appear here]</div>
+        <input type="text" id="resposta" placeholder="Enter your answer">
+        <button id="gerarEnigma">Generate New Enigma</button>
+        <button id="verificarResposta">Check Answer</button>
+    </div>
+    <!-- Tutorial Tab -->
+    <div id="tutorial-tab">How to Play</div>
+    <!-- Tutorial Content -->
+    <div id="tutorial-content">
+        <h2>Tutorial: How to Play</h2>
+        <p>Welcome to Mathematical Musical Enigmas! In this game, solve mathematical enigmas to discover musical notes.</p>
+        <p>1. Click "Generate New Enigma".</p>
+        <p>2. Read the enigma and input your answer.</p>
+        <p>3. Click "Check Answer" to verify.</p>
+        <p>4. Correct answer? Congratulations! Try again if incorrect.</p>
+        <p>5. Use "How to Play" for assistance.</p>
+
+        <!-- "Still Don't Understand!" Button -->
+        <button id="explainButton">Still Don't Understand!</button>
+
+        <!-- Explanation Box -->
+        <div id="explanation">
+            <h3>How to Relate Numbers to Musical Notes</h3>
+            <p>It's easy! Each number corresponds to a musical note. For example:</p>
+            <ul>
+                <li>1 = C</li>
+                <li>2 = D</li>
+                <li>3 = E</li>
+                <li>4 = F</li>
+                <li>5 = G</li>
+                <li>6 = A</li>
+            </ul>
+            <p>So, when you see a number in the enigma, you can think of the corresponding musical note!</p>
+        </div>
+    </div>
+    <script>
+        const enigmas = [
+            { pergunta: "What's the musical note corresponding to 5 + 3?", resposta: "C" },
+            { pergunta: "What's 12 divided by 2 in musical notes?", resposta: "E" },
+            { pergunta: "What's the musical note corresponding to 5 + 3?", resposta: "C" },
+            { pergunta: "What's 12 divided by 2 in musical notes?", resposta: "E" },
+            { pergunta: "What's the musical note that represents the number 7?", resposta: "A" },
+            { pergunta: "If you add 4 and 6 in musical notes, what's the resulting note?", resposta: "D" },
+            { pergunta: "What's half of 10 in musical notes?", resposta: "G" },
+            { pergunta: "What's the note that corresponds to adding 8 and 2?", resposta: "G" },
+            { pergunta: "If you subtract 3 from 9 in musical notes, what's the resulting note?", resposta: "F" },
+            { pergunta: "What's 16 divided by 4 in musical notes?", resposta: "C" }
+        ];
+        const enigmaElement = document.getElementById("enigma");
+        const respostaElement = document.getElementById("resposta");
+        const gerarEnigmaButton = document.getElementById("gerarEnigma");
+        const verificarRespostaButton = document.getElementById("verificarResposta");
+        let enigmaAtualIndex = 0;
+        function gerarEnigmaAleatorio() {
+            enigmaAtualIndex = Math.floor(Math.random() * enigmas.length);
+            enigmaElement.textContent = "Enigma: " + enigmas[enigmaAtualIndex].pergunta;
+            respostaElement.value = "";
+        }
+        function verificarResposta() {
+            const respostaUsuario = respostaElement.value.toLowerCase().trim();
+            const respostaCorreta = enigmas[enigmaAtualIndex].resposta.toLowerCase();
+            if (respostaUsuario === respostaCorreta) {
+                alert("Correct answer! Congratulations!");
+            } else {
+                alert("Incorrect answer. Try again!");
+            }
+        }
+        gerarEnigmaButton.addEventListener("click", gerarEnigmaAleatorio);
+        verificarRespostaButton.addEventListener("click", verificarResposta);
+        // Generate the first enigma when the page loads
+        gerarEnigmaAleatorio();
+        // Add expand/collapse behavior for the tutorial
+        const tutorialTab = document.getElementById("tutorial-tab");
+        const tutorialContent = document.getElementById("tutorial-content");
+        tutorialTab.addEventListener("click", () => {
+            tutorialContent.style.display = tutorialContent.style.display === "block" ? "none" : "block";
+        });
+        // Add expand/collapse behavior for the explanation
+        const explainButton = document.getElementById("explainButton");
+        const explanation = document.getElementById("explanation");
+        explainButton.addEventListener("click", () => {
+            explanation.style.display = explanation.style.display === "block" ? "none" : "block";
+        });
+    </script>
+</body>
+</html>
