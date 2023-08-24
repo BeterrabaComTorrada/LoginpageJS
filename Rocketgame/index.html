@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: black;
+    overflow: hidden;
+  }
+  .space {
+    width: 800px;
+    height: 600px;
+    position: relative;
+    border: 1px solid white;
+    overflow: hidden;
+  }
+  #rocket {
+    width: 50px;
+    height: 50px;
+    background-color: red;
+    position: absolute;
+    transform-origin: top center;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  }
+</style>
+<title>Rocket Simulator</title>
+</head>
+<body>
+<div class="space">
+  <div id="rocket"></div>
+</div>
+<button id="thrustButtonUp">Impulso para Cima</button>
+<button id="thrustButtonDown">Impulso para Baixo</button>
+<button id="rotateLeftButton">Girar Esquerda</button>
+<button id="rotateRightButton">Girar Direita</button>
+<script>
+  const rocket = document.getElementById("rocket");
+  const space = document.querySelector(".space");
+  const spaceWidth = 800;
+  const spaceHeight = 600;
+  let rocketX = spaceWidth / 2;
+  let rocketY = spaceHeight - 50; // Começa mais para baixo
+  let rocketAngle = 0;
+  let rocketSpeedY = 0;
+  let rocketSpeedX = 0;
+  const thrustPower = 0.2;
+  const rotationSpeed = 5;
+  const friction = 0.98;
+  const phaseChangeDistance = 100; // Distância para mudar de fase
+  let distanceTraveled = 0;
+  let currentPhase = 1;
+
+  const thrustButtonUp = document.getElementById("thrustButtonUp");
+  const thrustButtonDown = document.getElementById("thrustButtonDown");
+  const rotateLeftButton = document.getElementById("rotateLeftButton");
+  const rotateRightButton = document.getElementById("rotateRightButton");
+
+  let isRotatingLeft = false;
+  let isRotatingRight = false;
+  let isThrustingUp = false;
+  let isThrustingDown = false;
+
+  thrustButtonUp.addEventListener("mousedown", () => isThrustingUp = true);
+  thrustButtonUp.addEventListener("mouseup", () => isThrustingUp = false);
+
+  thrustButtonDown.addEventListener("mousedown", () => isThrustingDown = true);
+  thrustButtonDown.addEventListener("mouseup", () => isThrustingDown = false);
+
+  rotateLeftButton.addEventListener("mousedown", () => isRotatingLeft = true);
+  rotateLeftButton.addEventListener("mouseup", () => isRotatingLeft = false);
+
+  rotateRightButton.addEventListener("mousedown", () => isRotatingRight = true);
+  rotateRightButton.addEventListener("mouseup", () => isRotatingRight = false);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+      isRotatingLeft = true;
+    } else if (event.key === "ArrowRight") {
+      isRotatingRight = true;
+    } else if (event.key === "ArrowUp") {
+      isThrustingUp = true;
+    } else if (event.key === "ArrowDown") {
+      isThrustingDown = true;
+    }
+  });
+
+  document.addEventListener("keyup", (event) => {
+    if (event.key === "ArrowLeft") {
+      isRotatingLeft = false;
+    } else if (event.key === "ArrowRight") {
+      isRotatingRight = false;
+    } else if (event.key === "ArrowUp") {
+      isThrustingUp = false;
+    } else if (event.key === "ArrowDown") {
+      isThrustingDown = false;
+    }
+  });
+
+  function updateRocket() {
+    if (isRotatingLeft) {
+      rotateRocket("left");
+    }
+    if (isRotatingRight) {
+      rotateRocket("right");
+    }
+    if (isThrustingUp) {
+      applyThrust(-1); // Impulso para cima (negativo Y)
+    }
+    if (isThrustingDown) {
+      applyThrust(1); // Impulso para baixo (positivo Y)
+    }
+
+    rocketX = (rocketX + rocketSpeedX) % spaceWidth;
+    rocketY += rocketSpeedY;
+
+    if (rocketY < 0) {
+      rocketY = spaceHeight - 50; // Voltar para a área inicial
+      rocketSpeedY = rocketSpeedY * friction;
+      distanceTraveled += spaceHeight;
+
+      if (distanceTraveled >= phaseChangeDistance) {
+        distanceTraveled = 0;
+        currentPhase++;
+      }
+    }
+
+    rocketSpeedX *= friction;
+    rocketSpeedY *= friction;
+
+    rocket.style.transform = `translate(${rocketX}px, ${rocketY}px) rotate(${rocketAngle}deg)`;
+  }
+
+  function rotateRocket(direction) {
+    if (direction === "left") {
+      rocketAngle -= rotationSpeed;
+    } else if (direction === "right") {
+      rocketAngle += rotationSpeed;
+    }
+  }
+
+  function applyThrust(directionY) {
+    const thrustX = Math.sin((rocketAngle * Math.PI) / 180) * thrustPower;
+    const thrustY = -Math.cos((rocketAngle * Math.PI) / 180) * thrustPower * directionY;
+
+    rocketSpeedX += thrustX;
+    rocketSpeedY += thrustY;
+    rocketSpeedY -= thrustPower;
+  }
+
+  function gameLoop() {
+    updateRocket();
+    // Atualizar obstáculos...
+    // Atualizar blocos móveis...
+    // Atualizar bolas amarelas...
+    
+    space.style.transform = `translate(calc(50% - ${rocketX}px), calc(50% - ${rocketY}px))`;
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  space.style.width = `${spaceWidth}px`;
+  space.style.height = `${spaceHeight}px`;
+
+  gameLoop();
+</script>
+</body>
+</html>
