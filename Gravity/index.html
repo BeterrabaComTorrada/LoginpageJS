@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gravity</title>
+  <style>
+    body {
+      background-color: black;
+      margin: 0;
+      padding: 0;
+    }
+
+    #container {
+      position: relative;
+      height: 100vh;
+    }
+
+    .shape {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background-color: yellow;
+      border-radius: 50%;
+      pointer-events: auto;
+      transition: background-color 0.3s;
+    }
+
+    .blue {
+      background-color: blue !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+
+  <script>
+    var container = document.getElementById('container');
+    var shapes = [];
+    var numShapes = 2;
+    var isBlue = false;
+
+    for (var i = 0; i < numShapes; i++) {
+      var shape = document.createElement('div');
+      shape.className = 'shape';
+      shape.style.left = Math.random() * 90 + 'vw';
+      shape.style.top = Math.random() * 90 + 'vh';
+      shape.style.animationDuration = Math.random() * 2 + 1 + 's';
+      shape.style.animationDelay = Math.random() * 2 + 's';
+
+      shape.addEventListener('mousedown', startDrag);
+      shape.addEventListener('mousemove', drag);
+      shape.addEventListener('mouseup', endDrag);
+      shape.addEventListener('click', changeColor);
+
+      container.appendChild(shape);
+      shapes.push(shape);
+    }
+
+    function startDrag(e) {
+      this.dragging = true;
+      this.startX = e.clientX - this.offsetLeft;
+      this.startY = e.clientY - this.offsetTop;
+    }
+
+    function drag(e) {
+      if (this.dragging) {
+        this.style.left = e.clientX - this.startX + 'px';
+        this.style.top = e.clientY - this.startY + 'px';
+      }
+    }
+
+    function endDrag() {
+      this.dragging = false;
+    }
+
+    function changeColor() {
+      if (!isBlue) {
+        this.classList.add('blue');
+        this.style.animation = 'none';
+        this.style.top = '90vh';
+        this.style.pointerEvents = 'none';
+      }
+    }
+
+    function calculateForce(shape1, shape2) {
+      var dx = shape2.offsetLeft - shape1.offsetLeft;
+      var dy = shape2.offsetTop - shape1.offsetTop;
+      var distance = Math.sqrt(dx * dx + dy * dy);
+      var force = 0.1;
+
+      if (distance < 100) {
+        var angle = Math.atan2(dy, dx);
+        var forceX = Math.cos(angle) * force;
+        var forceY = Math.sin(angle) * force;
+
+        shape1.style.left = shape1.offsetLeft - forceX + 'px';
+        shape1.style.top = shape1.offsetTop - forceY + 'px';
+
+        shape2.style.left = shape2.offsetLeft + forceX + 'px';
+        shape2.style.top = shape2.offsetTop + forceY + 'px';
+      }
+    }
+
+    function checkCollision(shape1, shape2) {
+      var dx = shape2.offsetLeft - shape1.offsetLeft;
+      var dy = shape2.offsetTop - shape1.offsetTop;
+      var distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < shape1.offsetWidth) {
+        var angle = Math.atan2(dy, dx);
+        var targetX = shape1.offsetLeft + Math.cos(angle) * shape1.offsetWidth;
+        var targetY = shape1.offsetTop + Math.sin(angle) * shape1.offsetWidth;
+
+        shape2.style.left = targetX + 'px';
+        shape2.style.top = targetY + 'px';
+      }
+    }
+
+    function update() {
+      for (var i = 0; i < shapes.length; i++) {
+        for (var j = i + 1; j < shapes.length; j++) {
+          calculateForce(shapes[i], shapes[j]);
+          checkCollision(shapes[i], shapes[j]);
+        }
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    update();
+  </script>
+</body>
+</html>
